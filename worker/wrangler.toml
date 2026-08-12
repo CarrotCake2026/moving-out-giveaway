@@ -1,0 +1,13 @@
+name = "moving-out-giveaway-api"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# Optional: only needed if you deploy via `wrangler` instead of pasting
+# worker.js into the Cloudflare dashboard editor.
+#
+# Set secrets/vars with:
+#   wrangler secret put NOTION_TOKEN
+#   wrangler secret put ALLOWED_ORIGIN   (or use [vars] below, it's not sensitive)
+#
+# [vars]
+# ALLOWED_ORIGIN = "https://yourname.github.io"
