@@ -126,7 +126,8 @@ async function queryDataSource(dsId, token) {
   let results = [];
   let cursor;
   do {
-    const body = cursor ? { start_cursor: cursor, page_size: 100 } : { page_size: 100 };
+    const body = { page_size: 100, sorts: [{ property: "Order", direction: "ascending" }] };
+    if (cursor) body.start_cursor = cursor;
     const res = await fetch(`https://api.notion.com/v1/data_sources/${dsId}/query`, {
       method: "POST",
       headers: { ...notionHeaders(token), "Content-Type": "application/json" },
