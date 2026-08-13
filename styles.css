@@ -31,7 +31,7 @@ body {
 .banner {
   position: relative;
   height: 220px;
-  background: linear-gradient(135deg, #cdb69a 0%, #b79c7c 35%, #8fa07b 70%, #6f8a63 100%);
+  background: url("assets/banner.jpg") center 20% / cover no-repeat, linear-gradient(135deg, #cdb69a 0%, #b79c7c 35%, #8fa07b 70%, #6f8a63 100%);
 }
 
 .banner::after {
