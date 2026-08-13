@@ -327,6 +327,32 @@ body {
   margin-top: 8px;
 }
 
+.modal-extra-block {
+  margin: 0 0 6px;
+}
+
+.modal-extra-block:is(h4, h5, h6) {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.modal-extra-list {
+  margin: 0 0 6px;
+  padding-left: 20px;
+}
+
+.modal-extra-list li {
+  margin: 0 0 3px;
+}
+
+.modal-extra code {
+  background: #f2f0ec;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
+}
+
 .modal-claim {
   margin-top: 16px;
   max-width: 320px;

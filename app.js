@@ -285,6 +285,72 @@
       });
   }
 
+  function appendRichRuns(container, runs) {
+    (runs || []).forEach((run) => {
+      let node = document.createTextNode(run.text);
+      if (run.code) {
+        const code = document.createElement("code");
+        code.append(node);
+        node = code;
+      }
+      if (run.bold) {
+        const b = document.createElement("strong");
+        b.append(node);
+        node = b;
+      }
+      if (run.italic) {
+        const i = document.createElement("em");
+        i.append(node);
+        node = i;
+      }
+      if (run.strikethrough) {
+        const s = document.createElement("s");
+        s.append(node);
+        node = s;
+      }
+      if (run.href) {
+        const a = document.createElement("a");
+        a.href = run.href;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.append(node);
+        node = a;
+      }
+      container.append(node);
+    });
+  }
+
+  const HEADING_TAGS = { heading_1: "h4", heading_2: "h5", heading_3: "h6" };
+
+  function renderExtraBlocks(container, blocks) {
+    let listEl = null;
+    let listTag = null;
+    blocks.forEach((block) => {
+      const isBulleted = block.type === "bulleted_list_item";
+      const isNumbered = block.type === "numbered_list_item";
+      if (isBulleted || isNumbered) {
+        const wantTag = isBulleted ? "ul" : "ol";
+        if (!listEl || listTag !== wantTag) {
+          listEl = document.createElement(wantTag);
+          listEl.className = "modal-extra-list";
+          container.append(listEl);
+          listTag = wantTag;
+        }
+        const li = document.createElement("li");
+        appendRichRuns(li, block.runs);
+        listEl.append(li);
+        return;
+      }
+      listEl = null;
+      listTag = null;
+      const tag = HEADING_TAGS[block.type] || "p";
+      const el = document.createElement(tag);
+      el.className = "modal-extra-block";
+      appendRichRuns(el, block.runs);
+      container.append(el);
+    });
+  }
+
   function renderModal(detail) {
     els.modalGallery.innerHTML = "";
     if (detail.images && detail.images.length) {
@@ -312,12 +378,7 @@
     });
 
     els.modalExtra.innerHTML = "";
-    (detail.extraLines || []).forEach((line) => {
-      const p = document.createElement("p");
-      p.style.margin = "0 0 4px";
-      p.textContent = line;
-      els.modalExtra.append(p);
-    });
+    renderExtraBlocks(els.modalExtra, detail.extraBlocks || []);
 
     els.modalClaim.innerHTML = "";
     const entry = itemIndex.get(detail.id);

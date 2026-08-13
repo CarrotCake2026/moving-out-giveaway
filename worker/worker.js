@@ -156,9 +156,22 @@ const TEXT_BLOCK_TYPES = new Set([
   "to_do",
 ]);
 
+function toRuns(richText) {
+  return richText
+    .filter((r) => r.plain_text)
+    .map((r) => ({
+      text: r.plain_text,
+      bold: !!(r.annotations && r.annotations.bold),
+      italic: !!(r.annotations && r.annotations.italic),
+      strikethrough: !!(r.annotations && r.annotations.strikethrough),
+      code: !!(r.annotations && r.annotations.code),
+      href: r.href || null,
+    }));
+}
+
 async function getPageExtras(pageId, token) {
   const images = [];
-  const textLines = [];
+  const blocks = [];
 
   async function walk(blockId, depth) {
     if (depth > 5) return;
@@ -177,8 +190,8 @@ async function getPageExtras(pageId, token) {
           if (url) images.push(url);
         } else if (TEXT_BLOCK_TYPES.has(b.type)) {
           const rt = (b[b.type] && b[b.type].rich_text) || [];
-          const t = rt.map((r) => r.plain_text).join("").trim();
-          if (t) textLines.push(t);
+          const runs = toRuns(rt);
+          if (runs.length) blocks.push({ type: b.type, runs });
         }
         if (b.has_children) await walk(b.id, depth + 1);
       }
@@ -187,7 +200,7 @@ async function getPageExtras(pageId, token) {
   }
 
   await walk(pageId, 0);
-  return { images, textLines };
+  return { images, blocks };
 }
 
 async function handleItems(env, ctx) {
@@ -238,7 +251,7 @@ async function handleItemDetail(id, env) {
     name: getTitle(page.properties),
     images: [...getFiles(page.properties, cat.fileProp), ...extras.images],
     lines: cat.textProps.map((tp) => getRichText(page.properties, tp)).filter(Boolean),
-    extraLines: extras.textLines,
+    extraBlocks: extras.blocks,
     claimedBy: getRichText(page.properties, "Claimed By").trim() || null,
     category: cat.key,
   };
