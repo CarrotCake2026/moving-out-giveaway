@@ -89,6 +89,11 @@ body {
   line-height: 1.6;
 }
 
+.intro-text strong {
+  color: #000;
+  font-weight: 700;
+}
+
 .status {
   font-size: 14px;
   color: var(--muted);
