@@ -142,7 +142,8 @@ body {
 
 .card-image-wrap {
   height: 190px;
-  background: #f2f0ec;
+  background: #ffffff;
+  border-bottom: 1px solid #ececec;
   cursor: pointer;
   display: flex;
   align-items: center;
