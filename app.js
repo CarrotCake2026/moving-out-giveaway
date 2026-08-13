@@ -61,12 +61,37 @@
     return img;
   }
 
+  const CLAIM_COLORS = [
+    { bg: "#e8f5ea", border: "#6fae7c", text: "#2f6b3d" },
+    { bg: "#e6f0fb", border: "#6fa3d9", text: "#2c5a8a" },
+    { bg: "#f0eaf9", border: "#a98fd9", text: "#5c3d99" },
+    { bg: "#fbe9f1", border: "#e08fb0", text: "#99315c" },
+    { bg: "#faf1de", border: "#d9a94a", text: "#8a5a10" },
+    { bg: "#e2f5f0", border: "#5cb89f", text: "#1f6e58" },
+    { bg: "#fbebe6", border: "#e08a6a", text: "#99381c" },
+    { bg: "#eef0f1", border: "#9aa3a8", text: "#45525a" },
+  ];
+
+  function colorForName(name) {
+    const key = (name || "").trim().toLowerCase();
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+      hash = (hash * 31 + key.charCodeAt(i)) | 0;
+    }
+    const index = Math.abs(hash) % CLAIM_COLORS.length;
+    return CLAIM_COLORS[index];
+  }
+
   function buildClaimBox(item, { compact } = {}) {
     const box = document.createElement("div");
     box.className = "claim-box";
 
     function renderClaimed(name) {
       box.className = "claim-box claimed";
+      const color = colorForName(name);
+      box.style.background = color.bg;
+      box.style.borderColor = color.border;
+      box.style.color = color.text;
       box.textContent = "";
       box.append(document.createTextNode("Claimed by "));
       const strong = document.createElement("strong");
@@ -76,6 +101,7 @@
 
     function renderOpen() {
       box.className = "claim-box";
+      box.style.cssText = "";
       box.innerHTML = "";
       const input = document.createElement("input");
       input.type = "text";
