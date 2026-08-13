@@ -16,6 +16,18 @@
 
   // itemId -> { item, cardClaimEl, modalClaimEl? }
   const itemIndex = new Map();
+  let lastSignature = null;
+
+  function isTypingInClaimBox() {
+    const active = document.activeElement;
+    return !!(active && active.tagName === "INPUT" && active.closest(".claim-box"));
+  }
+
+  function signatureOf(categories) {
+    return JSON.stringify(
+      categories.map((c) => [c.key, c.items.map((i) => [i.id, i.name, i.claimedBy, (i.images || []).length])])
+    );
+  }
 
   function setStatus(text, isError, showRetry) {
     els.status.classList.toggle("error", !!isError);
@@ -208,14 +220,26 @@
   }
 
   function loadItems() {
-    setStatus("Loading items…", false, false);
+    const isFirstLoad = lastSignature === null;
+    if (isFirstLoad) setStatus("Loading items…", false, false);
     fetch(`${API_BASE_URL}/api/items`)
       .then((res) => {
         if (!res.ok) throw new Error("bad status " + res.status);
         return res.json();
       })
       .then((data) => {
-        render(data.categories || []);
+        const categories = data.categories || [];
+        const signature = signatureOf(categories);
+        if (signature === lastSignature) {
+          setStatus("", false, false);
+          return;
+        }
+        if (!isFirstLoad && isTypingInClaimBox()) {
+          // Don't yank the page out from under someone mid-claim; try again next poll.
+          return;
+        }
+        lastSignature = signature;
+        render(categories);
         setStatus("", false, false);
       })
       .catch(() => {
