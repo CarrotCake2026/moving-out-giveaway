@@ -141,12 +141,17 @@ body {
 }
 
 .card-image-wrap {
-  aspect-ratio: 4 / 3;
+  height: 190px;
   background: #f2f0ec;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
+}
+
+.grid.small .card-image-wrap {
+  height: 130px;
 }
 
 .card-image-wrap img {
